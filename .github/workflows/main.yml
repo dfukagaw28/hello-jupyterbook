@@ -16,12 +16,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy-book:
+  build-book:
     runs-on: ubuntu-latest
-    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-    permissions:
-      pages: write
-      id-token: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -46,6 +43,21 @@ jobs:
         with:
           path: "_build/html"
 
+  deploy-book:
+    needs: build-book
+
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
       # Deploy the book's HTML to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
